@@ -40,8 +40,8 @@ if %errorlevel% eq 0 (
     exit /b 1
 )
 
-REM ----- Tat IPv6 -----
-echo Turn OFF IPv6...
+REM ----- Tắt IPv6 -----
+echo Turn off IPv6...
 netsh interface teredo set state disabled
 netsh interface ipv6 6to4 set state disabled
 netsh interface ipv6 isatap set state disabled
@@ -49,11 +49,11 @@ netsh interface ipv6 set privacy state=disabled
 reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 0xFF /f
 
 REM ----- Tắt Clients for Microsoft Networks -----
-echo Turn OFF Clients for Microsoft Networks...
+echo Turn off Clients for Microsoft Networks...
 wmic nicconfig where "IPEnabled=TRUE" call DisableComponent clients
 
 REM ----- Tạo quy tắc firewall chặn cổng -----
-echo Create firewall rules to block ports ...
+echo Create firewall rules to block ports...
 
 REM Chặn cổng TCP 135
 netsh advfirewall firewall add rule name="Block TCP 135" protocol=TCP dir=in localport=135 action=block
@@ -70,6 +70,6 @@ netsh advfirewall firewall add rule name="Block Dynamic RPC Mapper" protocol=TCP
 REM Chặn Dynamic RPC Endpoint
 netsh advfirewall firewall add rule name="Block Dynamic RPC Endpoint" protocol=TCP dir=in localport=49152-65535 action=block
 
-echo All installations have been performed successfully!
+echo All installations were performed successfully!
 
 pause
