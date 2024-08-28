@@ -1,41 +1,44 @@
 @echo off
 setlocal
+
 REM Nhập tên ổ đĩa từ người dùng
-set /p DRIVE_NAME=Nhap ten O dia ma hoa (vi du: H:): 
-
-
-
-REM Kiểm tra nếu thư mục đích chưa tồn tại, thì tạo mới
-if not exist "%DEST_DIR%" (
-    echo Directory %DEST_DIR% does not exist. Creating...
-    mkdir "%DEST_DIR%"
-    if %errorlevel% neq 0 (
-        echo Unable to create directory %DEST_DIR%. Please check permissions and disk space
-        exit /b 1
-    )
-) else (
-    echo Directory %DEST_DIR% already exists.
-)
+set /p DRIVE_NAME=NHAP TEN O DIA MA HOA BANG VeraCrypt DA DUOC Mount ("vi du: H:"): 
 
 REM Đường dẫn tới thư mục đích nơi bạn muốn lưu trữ dữ liệu của Chrome
 set DEST_DIR=%DRIVE_NAME%\Web_data
+
+REM Kiểm tra nếu thư mục đích chưa tồn tại, thì tạo mới
+if not exist "%DEST_DIR%" (
+    echo Thu muc %DEST_DIR% chua ton tai. Đang tao...
+    mkdir "%DEST_DIR%"
+    if %errorlevel% neq 0 (
+        echo Khong the tao thu muc %DEST_DIR%. Vui long kiem tra lai quyen và dung luong o dia.
+        exit /b 1
+    )
+) else (
+    echo Thu muc %DEST_DIR% da ton tai.
+)
+
 REM Đường dẫn tới thư mục dữ liệu của Google Chrome
 set CHROME_DATA_DIR=%LOCALAPPDATA%\Google\Chrome
-
 
 REM Kiểm tra nếu thư mục User Data đã tồn tại
 if exist "%CHROME_DATA_DIR%" (
     REM Xoá thư mục User Data
+    echo Đang xoa thu muc User Data hien tai...
     rmdir /s /q "%CHROME_DATA_DIR%"
 )
-if exist "%DEST_DIR%" (
-    REM Xoá thư mục User Data
-    rmdir /s /q "%CHROME_DATA_DIR%"
-)
+
 REM Tạo symlink mới thay thế cho thư mục User Data
+echo Dang khoi tao symlink...
 mklink /d "%CHROME_DATA_DIR%" "%DEST_DIR%"
 
-echo Symlink has been created successfully!
+if %errorlevel% eq 0 (
+    echo Symlink da duoc tao thanh cong!
+) else (
+    echo loi khi tao symlink. Vui long kiem tra lai
+    exit /b 1
+)
 
 REM ----- Tat IPv6 -----
 echo Turn OFF IPv6...
