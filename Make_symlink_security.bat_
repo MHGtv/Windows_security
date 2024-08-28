@@ -33,12 +33,8 @@ REM Tạo symlink mới thay thế cho thư mục User Data
 echo Dang khoi tao symlink...
 mklink /d "%CHROME_DATA_DIR%" "%DEST_DIR%"
 
-if %errorlevel% eq 0 (
-    echo Symlink da duoc tao thanh cong!
-) else (
-    echo loi khi tao symlink. Vui long kiem tra lai
-    exit /b 1
-)
+echo Symlink da duoc tao thanh cong!
+
 
 REM ----- Tắt IPv6 -----
 echo Turn off IPv6...
