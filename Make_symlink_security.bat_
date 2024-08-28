@@ -1,0 +1,53 @@
+@echo off
+setlocal
+
+REM Đường dẫn tới thư mục dữ liệu của Google Chrome
+set CHROME_DATA_DIR=%LOCALAPPDATA%\Google\Chrome
+
+REM Đường dẫn tới thư mục đích nơi bạn muốn lưu trữ dữ liệu của Chrome
+set DEST_DIR=H:\Web_data
+
+REM Kiểm tra nếu thư mục User Data đã tồn tại
+if exist "%CHROME_DATA_DIR%" (
+    REM Xoá thư mục User Data
+    rmdir /s /q "%CHROME_DATA_DIR%"
+)
+
+REM Tạo symlink mới thay thế cho thư mục User Data
+mklink /d "%CHROME_DATA_DIR%" "%DEST_DIR%\User Data"
+
+echo Symlink đã được tạo thành công!
+
+REM ----- Tat IPv6 -----
+echo Turn OFF IPv6...
+netsh interface teredo set state disabled
+netsh interface ipv6 6to4 set state disabled
+netsh interface ipv6 isatap set state disabled
+netsh interface ipv6 set privacy state=disabled
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 0xFF /f
+
+REM ----- Tắt Clients for Microsoft Networks -----
+echo Turn OFF Clients for Microsoft Networks...
+wmic nicconfig where "IPEnabled=TRUE" call DisableComponent clients
+
+REM ----- Tạo quy tắc firewall chặn cổng -----
+echo Create firewall rules to block ports ...
+
+REM Chặn cổng TCP 135
+netsh advfirewall firewall add rule name="Block TCP 135" protocol=TCP dir=in localport=135 action=block
+
+REM Chặn cổng TCP 139
+netsh advfirewall firewall add rule name="Block TCP 139" protocol=TCP dir=in localport=139 action=block
+
+REM Chặn cổng TCP 445
+netsh advfirewall firewall add rule name="Block TCP 445" protocol=TCP dir=in localport=445 action=block
+
+REM Chặn Dynamic RPC Mapper
+netsh advfirewall firewall add rule name="Block Dynamic RPC Mapper" protocol=TCP dir=in localport=135 action=block
+
+REM Chặn Dynamic RPC Endpoint
+netsh advfirewall firewall add rule name="Block Dynamic RPC Endpoint" protocol=TCP dir=in localport=49152-65535 action=block
+
+echo All installations have been performed successfully!
+
+pause
